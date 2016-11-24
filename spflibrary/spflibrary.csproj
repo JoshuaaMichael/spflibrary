@@ -41,20 +41,59 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DNSLookup.cs" />
     <Compile Include="enums\SPFResult.cs" />
-    <Compile Include="Interfaces\IDNSLookup.cs" />
     <Compile Include="Interfaces\ISPFCheck.cs" />
     <Compile Include="IPTool.cs" />
-    <Compile Include="library\ipnetwork\BigIntegerExt.cs" />
-    <Compile Include="library\ipnetwork\IPAddressCollection.cs" />
-    <Compile Include="library\ipnetwork\IPNetwork.cs" />
-    <Compile Include="library\ipnetwork\IPNetworkCollection.cs" />
+    <Compile Include="libraries\dns\Client\ClientRequest.cs" />
+    <Compile Include="libraries\dns\Client\ClientResponse.cs" />
+    <Compile Include="libraries\dns\Client\DnsClient.cs" />
+    <Compile Include="libraries\dns\Client\RequestResolver\IRequestResolver.cs" />
+    <Compile Include="libraries\dns\Client\RequestResolver\NullRequestResolver.cs" />
+    <Compile Include="libraries\dns\Client\RequestResolver\TcpRequestResolver.cs" />
+    <Compile Include="libraries\dns\Client\RequestResolver\UdpRequestResolver.cs" />
+    <Compile Include="libraries\dns\Client\ResponseException.cs" />
+    <Compile Include="libraries\dns\Protocol\Domain.cs" />
+    <Compile Include="libraries\dns\Protocol\Header.cs" />
+    <Compile Include="libraries\dns\Protocol\IMessage.cs" />
+    <Compile Include="libraries\dns\Protocol\IMessageEntry.cs" />
+    <Compile Include="libraries\dns\Protocol\IRequest.cs" />
+    <Compile Include="libraries\dns\Protocol\IResponse.cs" />
+    <Compile Include="libraries\dns\Protocol\Marshalling\EndianAttribute.cs" />
+    <Compile Include="libraries\dns\Protocol\Marshalling\Endianness.cs" />
+    <Compile Include="libraries\dns\Protocol\Marshalling\Struct.cs" />
+    <Compile Include="libraries\dns\Protocol\OperationCode.cs" />
+    <Compile Include="libraries\dns\Protocol\Question.cs" />
+    <Compile Include="libraries\dns\Protocol\RecordClass.cs" />
+    <Compile Include="libraries\dns\Protocol\RecordType.cs" />
+    <Compile Include="libraries\dns\Protocol\Request.cs" />
+    <Compile Include="libraries\dns\Protocol\ResourceRecords\BaseResourceRecord.cs" />
+    <Compile Include="libraries\dns\Protocol\ResourceRecords\CanonicalNameResourceRecord.cs" />
+    <Compile Include="libraries\dns\Protocol\ResourceRecords\IPAddressResourceRecord.cs" />
+    <Compile Include="libraries\dns\Protocol\ResourceRecords\IResourceRecord.cs" />
+    <Compile Include="libraries\dns\Protocol\ResourceRecords\MailExchangeResourceRecord.cs" />
+    <Compile Include="libraries\dns\Protocol\ResourceRecords\NameServerResourceRecord.cs" />
+    <Compile Include="libraries\dns\Protocol\ResourceRecords\PointerResourceRecord.cs" />
+    <Compile Include="libraries\dns\Protocol\ResourceRecords\ResourceRecord.cs" />
+    <Compile Include="libraries\dns\Protocol\ResourceRecords\ResourceRecordFactory.cs" />
+    <Compile Include="libraries\dns\Protocol\ResourceRecords\StartOfAuthorityResourceRecord.cs" />
+    <Compile Include="libraries\dns\Protocol\Response.cs" />
+    <Compile Include="libraries\dns\Protocol\ResponseCode.cs" />
+    <Compile Include="libraries\dns\Protocol\Utils\ByteExtensions.cs" />
+    <Compile Include="libraries\dns\Protocol\Utils\ByteStream.cs" />
+    <Compile Include="libraries\dns\Protocol\Utils\ObjectStringifier.cs" />
+    <Compile Include="libraries\ipnetwork\BigIntegerExt.cs" />
+    <Compile Include="libraries\ipnetwork\IPAddressCollection.cs" />
+    <Compile Include="libraries\ipnetwork\IPNetwork.cs" />
+    <Compile Include="libraries\ipnetwork\IPNetworkCollection.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SPFCheck.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="library\ipnetwork\license.txt" />
+    <Content Include="libraries\dns\license.txt" />
+    <Content Include="libraries\ipnetwork\license.txt" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
