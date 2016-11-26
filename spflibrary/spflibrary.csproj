@@ -42,6 +42,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DNSLookup.cs" />
+    <Compile Include="enums\SPFMechanism.cs" />
+    <Compile Include="enums\SPFModifier.cs" />
+    <Compile Include="enums\SPFQualifier.cs" />
     <Compile Include="enums\SPFResult.cs" />
     <Compile Include="Interfaces\ISPFCheck.cs" />
     <Compile Include="IPTool.cs" />
