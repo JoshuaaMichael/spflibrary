@@ -1,14 +1,12 @@
 ﻿
 namespace spflibrary.enums
 {
-	public enum SPFResult
+	public enum SPFQualifier
 	{
 		PASS,
 		FAIL,
 		SOFT_FAIL,
 		NEUTRAL,
-		NONE,
-		PERM_ERROR,
-		TEMP_ERROR
+		NO_HIT //Not in spec, used to detect if no hit
 	}
 }
