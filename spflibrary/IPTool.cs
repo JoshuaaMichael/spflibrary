@@ -92,5 +92,32 @@ namespace spflibrary
 
 			return IPNetwork.Contains(ipCidr, ipAddress);
 		}
+
+		public static bool ContainsIP(string ip, string cidr)
+		{
+			if (ValidIPv4Address(ip) && ValidIPv4CIDR(cidr))
+			{
+				return ContainsIPv4(ip, cidr);
+			}
+
+			if (ValidIPv6Address(ip) && ValidIPv6CIDR(cidr))
+			{
+				return ContainsIPv6(ip, cidr);
+			}
+
+			throw new ArgumentException("Illegal ip address or cidr given");
+		}
+
+		public static bool IsSameIP(string ip1, string ip2)
+		{
+			if((ValidIPv4Address(ip1) && ValidIPv4Address(ip2)) || (ValidIPv6Address(ip1) && ValidIPv6Address(ip2)))
+			{
+				//Both ips are valid and of the same ip version
+				IPAddress ipAddress1 = IPAddress.Parse(ip1);
+				IPAddress ipAddress2 = IPAddress.Parse(ip2);
+				return (ipAddress1.ToString() == ipAddress2.ToString()); //Could've compared byte arrays
+			}
+			return false;
+		}
 	}
 }
