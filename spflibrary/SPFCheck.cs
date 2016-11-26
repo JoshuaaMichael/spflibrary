@@ -3,11 +3,15 @@ using spflibrary.enums;
 using System.Collections.Generic;
 
 /*	TODO: 
+ *		- Write the 'include' mechanism
  *		- Unit tests, on everything
  *		- Make all wording match the website
  *		- Clean it up, resharper or something
  *		- Re-write the documentation
  *		- Remove all the interfaces
+ *		- Support case insensitivity
+ *		- Thread safe the dictionary
+ *		- Solve starting with mechanism issue
  */
 
 
@@ -15,12 +19,20 @@ namespace spflibrary
 {
 	public static class SPFCheck
 	{
+		private static Dictionary<char, SPFQualifier> charSPFQualifier;
+		private static Dictionary<SPFMechanism, string> mechanismStartsWith;
+		private static Dictionary<string, SPFMechanism> startsWithMechanism; //Reverse dictionary
+
+		
 		public static SPFResult PerformCheck(string ipAddress, string clientIp, string domain)
 		{
-			//does is tart with v=spf1, that's all I can take, soz brah
+			SetupDictionaries(); //Cheaper here then in every dict lookup call
+
+			
+			//does is start with v=spf1, that's all I can take, soz brah
 			//split it all up on white space
 			//for each value, check if it matches the heading of one of the mechanisms
-				//if it does, check if it matches, if it does, return it's qualifier
+			//if it does, check if it matches, if it does, return it's qualifier
 			throw new NotImplementedException();
 		}
 
@@ -153,62 +165,91 @@ namespace spflibrary
 
 		public static bool MatchExistsMechanism(string spfRecordMechanism)
 		{
-			//string domain = spfRecordMechanism.Substring(3);
+			string domain = spfRecordMechanism.Substring(7);
 
-			//return IPTool.ContainsIPv4(clientIp4, ip4Range);
+			List<string> ips = DNSLookup.LookupARecords(domain);
 
-			//This is a little trickier, want recursion aware algorithm
+			return (ips.Count > 0);
 		}
 
 		private static SPFQualifier ExtractQualifier(string spfRecordMechanism, SPFMechanism spfMechanism)
 		{
-			spfRecordMechanism = spfRecordMechanism.Trim();
-			switch (spfMechanism)
+			if(spfMechanism == SPFMechanism.INCLUDE)
 			{
-				case SPFMechanism.ALL:
-					return ExtractQualifier(spfRecordMechanism, "all");
-				case SPFMechanism.IP4:
-					return ExtractQualifier(spfRecordMechanism, "ip4");
-				case SPFMechanism.IP6:
-					return ExtractQualifier(spfRecordMechanism, "ip6");
-				case SPFMechanism.A:
-					return ExtractQualifier(spfRecordMechanism, "a");
-				case SPFMechanism.MX:
-					return ExtractQualifier(spfRecordMechanism, "mx");
-				case SPFMechanism.PTR:
-					return ExtractQualifier(spfRecordMechanism, "ptr");
-				case SPFMechanism.EXISTS:
-					return ExtractQualifier(spfRecordMechanism, "exists");
-				case SPFMechanism.INCLUDE:
-					return ExtractQualifier(spfRecordMechanism, "include");
+				throw new NotImplementedException("Not yet implemented");
 			}
-			return SPFQualifier.PASS;
+
+			return ExtractQualifier(spfRecordMechanism, LookupStartsWith(spfMechanism));
 		}
 
 		private static SPFQualifier ExtractQualifier(string spfRecordMechanism, string startsWith)
 		{
 			int index = spfRecordMechanism.IndexOf(startsWith);
 			if (index == 0)
-			{
-				//The default qualifier is "+", i.e. "Pass"
-				return SPFQualifier.PASS;
+			{		
+				return SPFQualifier.PASS; //The default qualifier is "+", i.e. "Pass"
 			}
 			else if (index == 1)
 			{
-				//If a mechanism results in a hit, its qualifier value is used
-				switch (spfRecordMechanism[0])
+				SPFQualifier value;
+				if (charSPFQualifier.TryGetValue(spfRecordMechanism[0], out value))
 				{
-					case '+':
-						return SPFQualifier.PASS;
-					case '-':
-						return SPFQualifier.FAIL;
-					case '~':
-						return SPFQualifier.SOFT_FAIL;
-					case '?':
-						return SPFQualifier.NEUTRAL;
+					return value;
 				}
 			}
 			throw new ArgumentException("Invalid SPF mechanism qualifier");
 		}
+
+		private static void SetupDictionaries()
+		{
+			if (mechanismStartsWith == null || startsWithMechanism == null || charSPFQualifier == null)
+			{
+				mechanismStartsWith = new Dictionary<SPFMechanism, string>();
+
+				mechanismStartsWith.Add(SPFMechanism.ALL, "all");
+				mechanismStartsWith.Add(SPFMechanism.IP4, "ip4");
+				mechanismStartsWith.Add(SPFMechanism.IP6, "ip6");
+				mechanismStartsWith.Add(SPFMechanism.A, "a");
+				mechanismStartsWith.Add(SPFMechanism.MX, "mx");
+				mechanismStartsWith.Add(SPFMechanism.PTR, "ptr");
+				mechanismStartsWith.Add(SPFMechanism.EXISTS, "exists");
+				mechanismStartsWith.Add(SPFMechanism.INCLUDE, "include");
+
+				startsWithMechanism = new Dictionary<string, SPFMechanism>();
+
+				foreach (KeyValuePair<SPFMechanism, string> pair in mechanismStartsWith)
+				{
+					startsWithMechanism.Add(pair.Value, pair.Key);
+				}
+
+				charSPFQualifier = new Dictionary<char, SPFQualifier>();
+
+				charSPFQualifier.Add('+', SPFQualifier.PASS);
+				charSPFQualifier.Add('-', SPFQualifier.FAIL);
+				charSPFQualifier.Add('~', SPFQualifier.SOFT_FAIL);
+				charSPFQualifier.Add('?', SPFQualifier.NEUTRAL);
+			}
+		}
+
+		private static string LookupStartsWith(SPFMechanism mechanism)
+		{
+			string value;
+			if (!mechanismStartsWith.TryGetValue(mechanism, out value))
+			{
+				return "";
+			}
+			return value;
+		}
+
+		private static SPFMechanism LookupMechanism(string startsWith)
+		{
+			SPFMechanism value;
+			if (!startsWithMechanism.TryGetValue(startsWith, out value))
+			{
+				return SPFMechanism.UNKNOWN;
+			}
+			return value;
+		}
+
 	}
 }

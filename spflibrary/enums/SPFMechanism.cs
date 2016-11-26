@@ -16,5 +16,6 @@ namespace spflibrary.enums
 		PTR,
 		EXISTS,
 		INCLUDE,
+		UNKNOWN
 	}
 }
